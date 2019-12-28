@@ -1,0 +1,26 @@
+{
+  "name": "kaiquegarcia/sdk-php-base",
+  "description": "Base para construção de SDKs PHPI",
+  "keywords": ["sdk", "php", "base"],
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Kaique Garcia",
+      "email": "kaiquegarciam@gmail.com"
+    }
+  ],
+  "version": "1.0.0",
+  "require": {
+    "php": "^7.2",
+    "ext-json": "*",
+    "ext-simplexml": "*",
+    "ext-curl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "SdkBase\\": "src/"
+    },
+    "files": ["src/spl_autoload.php"]
+  }
+}
