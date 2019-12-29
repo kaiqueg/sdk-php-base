@@ -25,6 +25,8 @@ abstract class Entity extends HttpRequest
 
     abstract protected function injectSettingsData(array $postFields): array;
 
+    abstract protected function toArray(): array;
+
     public function getId()
     {
         return $this->getProperty("id");
