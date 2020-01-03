@@ -2,13 +2,19 @@
 
 namespace SdkBase\Utils;
 
+use Exception;
 use SdkBase\Exceptions\Http\BadRequestException;
 use SdkBase\Exceptions\Http\ConflictException;
 use SdkBase\Exceptions\Http\ForbiddenException;
+use SdkBase\Exceptions\Http\GatewayTimeoutException;
 use SdkBase\Exceptions\Http\InternalServerErrorException;
 use SdkBase\Exceptions\Http\MethodNotAllowedException;
 use SdkBase\Exceptions\Http\NotFoundException;
+use SdkBase\Exceptions\Http\NotImplementedException;
+use SdkBase\Exceptions\Http\ServiceUnavailableException;
+use SdkBase\Exceptions\Http\TooManyRequestsException;
 use SdkBase\Exceptions\Http\UnauthorizedException;
+use SdkBase\Exceptions\Http\UnavailableForLegalReasonsException;
 use SdkBase\Exceptions\Validation\UnexpectedResultException;
 use SdkBase\Exceptions\Validation\UnexpectedValueException;
 use SdkBase\Exceptions\Validation\WorthlessVariableException;
@@ -161,6 +167,22 @@ class Curl
     }
 
     /**
+     * @param int $attemptTimes
+     * @param Exception $exception
+     * @return string
+     * @throws Exception
+     */
+    private function tryAgain(int $attemptTimes, Exception $exception): string
+    {
+        if($attemptTimes <= 1) {
+            throw $exception;
+        }
+        sleep(2);
+        return $this->send(--$attemptTimes);
+    }
+
+    /**
+     * @param int $attemptTimes
      * @return string
      * @throws BadRequestException
      * @throws ConflictException
@@ -168,10 +190,16 @@ class Curl
      * @throws InternalServerErrorException
      * @throws MethodNotAllowedException
      * @throws NotFoundException
+     * @throws NotImplementedException
      * @throws UnauthorizedException
+     * @throws UnavailableForLegalReasonsException
      * @throws UnexpectedResultException
+     * @throws TooManyRequestsException
+     * @throws ServiceUnavailableException
+     * @throws GatewayTimeoutException
+     * @throws Exception
      */
-    public function send(): string
+    public function send(int $attemptTimes = 1): string
     {
         $curl = curl_init();
         curl_setopt_array(
@@ -207,8 +235,23 @@ class Curl
             case 409:
                 throw new ConflictException($result);
                 break;
+            case 429:
+                return $this->tryAgain($attemptTimes, new TooManyRequestsException($result));
+                break;
+            case 451:
+                throw new UnavailableForLegalReasonsException($result);
+                break;
             case 500:
                 throw new InternalServerErrorException($result);
+                break;
+            case 501:
+                throw new NotImplementedException($result);
+                break;
+            case 503:
+                return $this->tryAgain($attemptTimes, new ServiceUnavailableException($result));
+                break;
+            case 504:
+                return $this->tryAgain($attemptTimes, new GatewayTimeoutException($result));
                 break;
             default:
                 throw new UnexpectedResultException($result);
