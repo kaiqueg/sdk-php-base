@@ -27,9 +27,14 @@ abstract class Entity extends HttpRequest
 
     abstract public function toArray(): array;
 
+    protected function getIdVariableName(): string
+    {
+        return "id";
+    }
+
     public function getId()
     {
-        return $this->getProperty("id");
+        return $this->getProperty($this->getIdVariableName());
     }
 
     /**
@@ -77,7 +82,7 @@ abstract class Entity extends HttpRequest
          * so I'm removing it from shadowCopy
          * then our method 'getDirty' will  always identify it as a new data
         **/
-        $requiredVars = ["id", "parent", "children", "hidden", "deleted"];
+        $requiredVars = [$this->getIdVariableName(), "parent", "children", "hidden", "deleted"];
         foreach($requiredVars as $requiredVar) {
             if(isset($this->shadowCopy[$requiredVar])) {
                 unset($this->shadowCopy[$requiredVar]);
@@ -125,7 +130,10 @@ abstract class Entity extends HttpRequest
         $output = [];
         $class = get_called_class();
         foreach ($result as $item) {
-            if($item['id'] === 0) {
+            if(
+                !empty($item[$this->getIdVariableName()])
+                && $item[$this->getIdVariableName()] === 0
+            ) {
                 continue;
             }
             /** @var Entity $object */
@@ -164,7 +172,7 @@ abstract class Entity extends HttpRequest
      */
     protected function existsOnVendor(): bool
     {
-        return !empty($this->properties['id']);
+        return !empty($this->properties[$this->getIdVariableName()]);
     }
 
     /**
