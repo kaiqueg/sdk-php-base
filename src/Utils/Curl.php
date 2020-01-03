@@ -18,6 +18,7 @@ class Curl
     private $url = "";
     private $method = CurlMethod::GET;
     private $contentype = CurlContentType::JSON;
+    private $headers = [];
     private $postFields = [];
 
     /**
@@ -60,6 +61,18 @@ class Curl
             throw new UnexpectedValueException("Invalid content type '$contentType'.");
         }
         $this->contentype = $contentType;
+    }
+
+    /**
+     * @param string $header
+     * @throws UnexpectedValueException
+     */
+    public function addHeader(string $header): void
+    {
+        if(strpos(strtolower($header), "content-type") !== false) {
+            throw new UnexpectedValueException("If you want define content-type header, use Curl->setContentType method.");
+        }
+        $this->headers[] = $header;
     }
 
     /**
@@ -129,11 +142,11 @@ class Curl
             $isGetMethod && !empty($this->postFields)
                 ? "?" . http_build_query($this->postFields)
                 : "";
+        $httpHeader = $this->headers;
+        $httpHeader[] = "Content-Type: {$this->contentype}; charset=UTF-8";
         $opts = [
             CURLOPT_URL => $this->url . $getFields,
-            CURLOPT_HTTPHEADER => [
-                "Content-Type: {$this->contentype}; charset=UTF-8",
-            ],
+            CURLOPT_HTTPHEADER => $httpHeader,
             CURLOPT_RETURNTRANSFER => 1,
             CURLOPT_TIMEOUT => '30',
             CURLOPT_SSL_VERIFYPEER => false,
