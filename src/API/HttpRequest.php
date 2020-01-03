@@ -5,10 +5,15 @@ namespace SdkBase\API;
 use SdkBase\Exceptions\Http\BadRequestException;
 use SdkBase\Exceptions\Http\ConflictException;
 use SdkBase\Exceptions\Http\ForbiddenException;
+use SdkBase\Exceptions\Http\GatewayTimeoutException;
 use SdkBase\Exceptions\Http\InternalServerErrorException;
 use SdkBase\Exceptions\Http\MethodNotAllowedException;
 use SdkBase\Exceptions\Http\NotFoundException;
+use SdkBase\Exceptions\Http\NotImplementedException;
+use SdkBase\Exceptions\Http\ServiceUnavailableException;
+use SdkBase\Exceptions\Http\TooManyRequestsException;
 use SdkBase\Exceptions\Http\UnauthorizedException;
+use SdkBase\Exceptions\Http\UnavailableForLegalReasonsException;
 use SdkBase\Exceptions\Validation\UnexpectedResultException;
 use SdkBase\Exceptions\Validation\UnexpectedValueException;
 use SdkBase\Exceptions\Validation\WorthlessVariableException;
@@ -57,12 +62,17 @@ abstract class HttpRequest
      * @throws UnexpectedResultException
      * @throws UnexpectedValueException
      * @throws WorthlessVariableException
+     * @throws GatewayTimeoutException
+     * @throws NotImplementedException
+     * @throws ServiceUnavailableException
+     * @throws TooManyRequestsException
+     * @throws UnavailableForLegalReasonsException
      */
     protected function curlGET(string $url, array $postFields = [], string $contentType = CurlContentType::JSON): string
     {
         $curl = $this->curlInit($url, $postFields, $contentType);
         $curl->setMethod(CurlMethod::GET);
-        return $curl->send();
+        return $curl->send(3);
     }
 
     /**
@@ -73,10 +83,15 @@ abstract class HttpRequest
      * @throws BadRequestException
      * @throws ConflictException
      * @throws ForbiddenException
+     * @throws GatewayTimeoutException
      * @throws InternalServerErrorException
      * @throws MethodNotAllowedException
      * @throws NotFoundException
+     * @throws NotImplementedException
+     * @throws ServiceUnavailableException
+     * @throws TooManyRequestsException
      * @throws UnauthorizedException
+     * @throws UnavailableForLegalReasonsException
      * @throws UnexpectedResultException
      * @throws UnexpectedValueException
      * @throws WorthlessVariableException
@@ -86,7 +101,7 @@ abstract class HttpRequest
         $curl = $this->curlInit($url, $postFields, $contentType);
         $curl->setMethod(CurlMethod::POST);
         $curl->unsetField("pid");
-        return $curl->send();
+        return $curl->send(3);
     }
 
     /**
@@ -97,10 +112,15 @@ abstract class HttpRequest
      * @throws BadRequestException
      * @throws ConflictException
      * @throws ForbiddenException
+     * @throws GatewayTimeoutException
      * @throws InternalServerErrorException
      * @throws MethodNotAllowedException
      * @throws NotFoundException
+     * @throws NotImplementedException
+     * @throws ServiceUnavailableException
+     * @throws TooManyRequestsException
      * @throws UnauthorizedException
+     * @throws UnavailableForLegalReasonsException
      * @throws UnexpectedResultException
      * @throws UnexpectedValueException
      * @throws WorthlessVariableException
@@ -110,7 +130,7 @@ abstract class HttpRequest
         $curl = $this->curlInit($url, $postFields, $contentType);
         $curl->setMethod(CurlMethod::PUT);
         $curl->unsetField("pid");
-        return $curl->send();
+        return $curl->send(3);
     }
 
     /**
@@ -121,10 +141,15 @@ abstract class HttpRequest
      * @throws BadRequestException
      * @throws ConflictException
      * @throws ForbiddenException
+     * @throws GatewayTimeoutException
      * @throws InternalServerErrorException
      * @throws MethodNotAllowedException
      * @throws NotFoundException
+     * @throws NotImplementedException
+     * @throws ServiceUnavailableException
+     * @throws TooManyRequestsException
      * @throws UnauthorizedException
+     * @throws UnavailableForLegalReasonsException
      * @throws UnexpectedResultException
      * @throws UnexpectedValueException
      * @throws WorthlessVariableException
@@ -134,6 +159,6 @@ abstract class HttpRequest
         $curl = $this->curlInit($url, $postFields, $contentType);
         $curl->setMethod(CurlMethod::DELETE);
         $curl->unsetField("pid");
-        return $curl->send();
+        return $curl->send(3);
     }
 }
