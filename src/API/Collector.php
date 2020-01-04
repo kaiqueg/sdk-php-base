@@ -2,6 +2,7 @@
 
 namespace SdkBase\API;
 
+use SdkBase\Exceptions\Validation\FileNotFoundException;
 use SdkBase\Exceptions\Validation\UnexpectedResultException;
 use SdkBase\Exceptions\Validation\UnexpectedValueException;
 use SdkBase\Exceptions\Validation\UnwritablePathException;
@@ -13,8 +14,11 @@ abstract class Collector
     const LOOP_ITERATION_LIMIT = 200;
 
     abstract protected static function getListJsonPath(): string;
+
     abstract protected static function getCollectionJsonPath(): string;
+
     abstract protected function getListFromVendor(): array;
+
     abstract protected function collectItem(array $item): array;
 
     private $listManager;
@@ -34,14 +38,12 @@ abstract class Collector
         $this->collectionManager = new Json();
         $this->collectionManager->setPath(static::getCollectionJsonPath());
 
-        if (!file_exists(static::getListJsonPath())) {
+        try {
+            $this->listManager->load();
+        } catch (FileNotFoundException $exception) {
             $this->importList();
-        } else {
-            try {
-                $this->listManager->load();
-            } catch (UnexpectedResultException $e) {
-                $this->importList();
-            }
+        } catch (UnexpectedResultException $e) {
+            $this->importList();
         }
     }
 
@@ -105,7 +107,11 @@ abstract class Collector
      */
     public function collect(): int
     {
-        $this->collectionManager->load();
+        try {
+            $this->collectionManager->load();
+        } catch (FileNotFoundException $exception) {
+            // do nothing, it's expected if it's a collection init
+        }
         $collection = $this->collectionManager->getData();
         $collectionCount = count($collection);
         $list = $this->listManager->getData();
