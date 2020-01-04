@@ -114,7 +114,7 @@ abstract class Collector
             return 0;
         }
         $start = $collectionCount;
-        $end = $start + self::LOOP_ITERATION_LIMIT;
+        $end = $start + static::LOOP_ITERATION_LIMIT;
         for ($index = $start; $index < $end && $index < $listCount; $index++) {
             $collection = $this->collectItem($list[$index]);
         }
