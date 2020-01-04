@@ -81,10 +81,10 @@ abstract class Entity extends HttpRequest
          * some variables as 'parent' are required for any request when it exists
          * so I'm removing it from shadowCopy
          * then our method 'getDirty' will  always identify it as a new data
-        **/
+         **/
         $requiredVars = [$this->getIdVariableName(), "parent", "children", "hidden", "deleted"];
-        foreach($requiredVars as $requiredVar) {
-            if(isset($this->shadowCopy[$requiredVar])) {
+        foreach ($requiredVars as $requiredVar) {
+            if (isset($this->shadowCopy[$requiredVar])) {
                 unset($this->shadowCopy[$requiredVar]);
             }
         }
@@ -92,7 +92,7 @@ abstract class Entity extends HttpRequest
 
     /**
      * @param mixed $result
-     * @param array $postedFields: usage on class SdkBase\API\Entities\Media
+     * @param array $postedFields : usage on class SdkBase\API\Entities\Media
      * @throws UnexpectedResultException
      */
     protected function fetchResult($result, array $postedFields = []): void
@@ -130,7 +130,7 @@ abstract class Entity extends HttpRequest
         $output = [];
         $class = get_called_class();
         foreach ($result as $item) {
-            if(
+            if (
                 !empty($item[$this->getIdVariableName()])
                 && $item[$this->getIdVariableName()] === 0
             ) {

@@ -75,7 +75,7 @@ class Curl
      */
     public function addHeader(string $header): void
     {
-        if(strpos(strtolower($header), "content-type") !== false) {
+        if (strpos(strtolower($header), "content-type") !== false) {
             throw new UnexpectedValueException("If you want define content-type header, use Curl->setContentType method.");
         }
         $this->headers[] = $header;
@@ -99,7 +99,7 @@ class Curl
      */
     public function unsetField(string $name): void
     {
-        if(isset($this->postFields[$name])) {
+        if (isset($this->postFields[$name])) {
             unset($this->postFields[$name]);
         }
     }
@@ -174,7 +174,7 @@ class Curl
      */
     private function tryAgain(int $attemptTimes, Exception $exception): string
     {
-        if($attemptTimes <= 1) {
+        if ($attemptTimes <= 1) {
             throw $exception;
         }
         sleep(2);

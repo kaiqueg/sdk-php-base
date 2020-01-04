@@ -24,6 +24,7 @@ use SdkBase\Utils\CurlMethod;
 abstract class HttpRequest
 {
     abstract protected function getAuthorizationHeader(): array;
+
     /**
      * @param string $url
      * @param array $postFields
@@ -39,8 +40,8 @@ abstract class HttpRequest
         $curl->setPostFields($postFields);
         $curl->setUrl($url);
         $headers = $this->getAuthorizationHeader();
-        if(!empty($headers)) {
-            foreach($headers as $header) {
+        if (!empty($headers)) {
+            foreach ($headers as $header) {
                 $curl->addHeader($header);
             }
         }

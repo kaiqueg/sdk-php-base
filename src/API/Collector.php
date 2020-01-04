@@ -14,8 +14,11 @@ abstract class Collector
     const LOOP_ITERATION_LIMIT = 200;
 
     abstract protected static function getListJsonPath(): string;
+
     abstract protected static function getCollectionJsonPath(): string;
+
     abstract protected function getListFromVendor(): array;
+
     abstract protected function collectItem(array $item): array;
 
     private $listManager;
@@ -37,7 +40,7 @@ abstract class Collector
 
         try {
             $this->listManager->load();
-        } catch(FileNotFoundException $exception) {
+        } catch (FileNotFoundException $exception) {
             $this->importList();
         } catch (UnexpectedResultException $e) {
             $this->importList();
@@ -106,7 +109,7 @@ abstract class Collector
     {
         try {
             $this->collectionManager->load();
-        } catch(FileNotFoundException $exception) {
+        } catch (FileNotFoundException $exception) {
             // do nothing, it's expected if it's a collection init
         }
         $collection = $this->collectionManager->getData();

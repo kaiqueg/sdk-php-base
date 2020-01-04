@@ -8,12 +8,13 @@ class Time
     {
         return ($unity < 10 ? "0" : "") . $unity;
     }
+
     public static function fromMilliseconds(int $ms): ?string
     {
-        if($ms <= 0) {
+        if ($ms <= 0) {
             return null;
         }
-        $seconds = floor($ms/1000);
+        $seconds = floor($ms / 1000);
         $minutes = floor(($seconds / 60) % 60);
         $hours = floor($seconds / 3600);
         $time = [
