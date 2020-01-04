@@ -2,6 +2,7 @@
 
 namespace SdkBase\API;
 
+use Exception;
 use SdkBase\Exceptions\Validation\FileNotFoundException;
 use SdkBase\Exceptions\Validation\UnexpectedResultException;
 use SdkBase\Exceptions\Validation\UnexpectedValueException;
@@ -144,6 +145,17 @@ abstract class Collector
         }
         $this->listManager->setData($list);
         $this->listManager->save();
+        $this->resetCollection();
         return true;
+    }
+
+    private function resetCollection(): void
+    {
+        $this->collectionManager->setData([]);
+        try {
+            $this->collectionManager->save();
+        } catch (Exception $e) {
+            // do nothing
+        }
     }
 }
