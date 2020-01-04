@@ -19,7 +19,16 @@ $data = [
     ],
 ];
 
-echo "<h1>SAVE</h1>";
+echo "<h1>BLANK LOAD</h1>";
+$emptyJson = new \SdkBase\Utils\Json();
+$emptyJson->setPath($path);
+try {
+    $emptyJson->load();
+} catch (\SdkBase\Exceptions\Validation\FileNotFoundException $e) {
+    echo "<br/>Right, file not found as expected.";
+}
+
+echo "<hr/><h1>SAVE</h1>";
 $json = new \SdkBase\Utils\Json();
 $json->setPath($path);
 $json->setData($data);

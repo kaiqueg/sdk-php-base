@@ -2,6 +2,7 @@
 
 namespace SdkBase\Utils;
 
+use SdkBase\Exceptions\Validation\FileNotFoundException;
 use SdkBase\Exceptions\Validation\UnexpectedResultException;
 use SdkBase\Exceptions\Validation\UnexpectedValueException;
 use SdkBase\Exceptions\Validation\UnwritablePathException;
@@ -53,10 +54,14 @@ class Json
 
     /**
      * @return string
+     * @throws FileNotFoundException
      * @throws UnexpectedResultException
      */
     private function pull(): string
     {
+        if(!file_exists($this->path)) {
+            throw new FileNotFoundException();
+        }
         $result = file_get_contents($this->path);
         if(!is_string($result)) {
             throw new UnexpectedResultException("Unable to pull JSON: $result");
@@ -97,6 +102,7 @@ class Json
     }
 
     /**
+     * @throws FileNotFoundException
      * @throws UnexpectedResultException
      * @throws WorthlessVariableException
      */
