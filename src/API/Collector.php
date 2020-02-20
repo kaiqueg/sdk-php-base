@@ -105,6 +105,11 @@ abstract class Collector
         $this->collectedCount = count($this->tempCollectionManager->getData());
     }
 
+    public function getCollectedPercentage(): float
+    {
+        return $this->totalCount > 0 ? $this->collectedCount / $this->totalCount * 100 : 100.0;
+    }
+
     public function getLeftCount(): int
     {
         return $this->totalCount > 0 && $this->collectedCount < $this->totalCount ? $this->totalCount - $this->collectedCount : 0;
