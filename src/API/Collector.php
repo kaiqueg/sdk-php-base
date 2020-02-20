@@ -18,12 +18,18 @@ abstract class Collector
 
     abstract protected static function getCollectionJsonPath(): string;
 
+    abstract protected static function getCollectionJsonTemporaryPath(): string;
+
     abstract protected function getListFromVendor(): array;
 
     abstract protected function collectItem(array $item): array;
 
+    /** @var Json $listManager */
     private $listManager;
+    /** @var Json $collectionManager */
     private $collectionManager;
+    private $totalCount = 0;
+    private $collectedCount = 0;
 
     /**
      * StudentCollector constructor.
@@ -34,11 +40,21 @@ abstract class Collector
      */
     public function __construct()
     {
-        $this->listManager = new Json();
-        $this->listManager->setPath(static::getListJsonPath());
+        $this->setListManager();
         $this->collectionManager = new Json();
         $this->collectionManager->setPath(static::getCollectionJsonPath());
+    }
 
+    /**
+     * @throws UnexpectedResultException
+     * @throws UnexpectedValueException
+     * @throws UnwritablePathException
+     * @throws WorthlessVariableException
+     */
+    private function setListManager(): void
+    {
+        $this->listManager = new Json();
+        $this->listManager->setPath(static::getListJsonPath());
         try {
             $this->listManager->load();
         } catch (FileNotFoundException $exception) {
@@ -46,6 +62,32 @@ abstract class Collector
         } catch (UnexpectedResultException $e) {
             $this->importList();
         }
+        $this->setTotalCount();
+    }
+
+    private function setTotalCount(): void
+    {
+        $this->totalCount = count($this->listManager->getData());
+    }
+
+    private function setCollectedCount(): void
+    {
+        $this->collectedCount = count($this->collectionManager->getData());
+    }
+
+    public function getLeftCount(): int
+    {
+        return $this->totalCount > 0 && $this->collectedCount < $this->totalCount ? $this->totalCount - $this->collectedCount : 0;
+    }
+
+    public function getTotalCount(): int
+    {
+        return $this->totalCount;
+    }
+
+    public function getCollectedCount(): int
+    {
+        return $this->collectedCount;
     }
 
     /**
@@ -110,24 +152,32 @@ abstract class Collector
     {
         try {
             $this->collectionManager->load();
+            $this->setCollectedCount();
         } catch (FileNotFoundException $exception) {
             // do nothing, it's expected if it's a collection init
         }
-        $collection = $this->collectionManager->getData();
-        $collectionCount = count($collection);
+        if ($this->collectedCount < $this->totalCount) {
+            $collection = $this->getCollectedItems();
+            $this->collectionManager->setData($collection);
+            $this->collectionManager->save();
+        }
+        return $this->getLeftCount();
+    }
+
+    private function getCollectedItems(): array
+    {
+        $end = $this->collectedCount + static::LOOP_ITERATION_LIMIT;
         $list = $this->listManager->getData();
-        $listCount = count($list);
-        if ($collectionCount >= $listCount) {
-            return 0;
-        }
-        $start = $collectionCount;
-        $end = $start + static::LOOP_ITERATION_LIMIT;
-        for ($index = $start; $index < $end && $index < $listCount; $index++) {
+        $collection = $this->collectionManager->getData();
+        for (
+            $index = $this->collectedCount;
+            $index < $end && $index < $this->totalCount;
+            $index++
+        ) {
             $collection = $this->collectItem($list[$index]);
+            $this->collectedCount++;
         }
-        $this->collectionManager->setData($collection);
-        $this->collectionManager->save();
-        return $listCount - $index;
+        return $collection;
     }
 
     /**
@@ -145,15 +195,17 @@ abstract class Collector
         }
         $this->listManager->setData($list);
         $this->listManager->save();
+        $this->setTotalCount();
         $this->resetCollection();
         return true;
     }
 
-    private function resetCollection(): void
+    public function resetCollection(): void
     {
         $this->collectionManager->setData([]);
         try {
             $this->collectionManager->save();
+            $this->setCollectedCount();
         } catch (Exception $e) {
             // do nothing
         }
