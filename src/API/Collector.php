@@ -116,7 +116,7 @@ abstract class Collector
         if (!$left) {
             return 0;
         }
-        return intval(ceil($left / self::LOOP_ITERATION_LIMIT));
+        return intval(ceil($left / static::LOOP_ITERATION_LIMIT));
     }
 
     public function getTotalCount(): int
