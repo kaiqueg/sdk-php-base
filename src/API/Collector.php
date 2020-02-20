@@ -200,12 +200,13 @@ abstract class Collector
             $collection = $this->getCollectedItems();
             $this->tempCollectionManager->setData($collection);
             $this->tempCollectionManager->save();
+            $this->setCollectedCount();
         }
         $left = $this->getLeftCount();
         if (!$left) {
             $this->transferTemporaryCollection();
         }
-        return $this->getLeftCount();
+        return $left;
     }
 
     /**
@@ -231,7 +232,6 @@ abstract class Collector
         ) {
             $collection[] = $this->collectItem($list[$index]);
         }
-        $this->setCollectedCount();
         return $collection;
     }
 
