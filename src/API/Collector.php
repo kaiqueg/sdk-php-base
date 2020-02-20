@@ -229,9 +229,9 @@ abstract class Collector
             $index < $end && $index < $this->totalCount;
             $index++
         ) {
-            $collection = $this->collectItem($list[$index]);
-            $this->collectedCount++;
+            $collection[] = $this->collectItem($list[$index]);
         }
+        $this->setCollectedCount();
         return $collection;
     }
 
