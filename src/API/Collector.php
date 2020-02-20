@@ -102,7 +102,7 @@ abstract class Collector
 
     private function setCollectedCount(): void
     {
-        $this->collectedCount = count($this->collectionManager->getData());
+        $this->collectedCount = count($this->tempCollectionManager->getData());
     }
 
     public function getLeftCount(): int
