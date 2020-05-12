@@ -223,6 +223,7 @@ abstract class Collector
     {
         $this->collectionManager->setData($this->tempCollectionManager->getData());
         $this->collectionManager->save();
+        $this->tempCollectionManager->delete();
     }
 
     private function getCollectedItems(): array
@@ -262,9 +263,8 @@ abstract class Collector
 
     public function resetCollection(): void
     {
-        $this->tempCollectionManager->setData([]);
         try {
-            $this->tempCollectionManager->save();
+            $this->tempCollectionManager->delete();
             $this->setCollectedCount();
         } catch (Exception $e) {
             // do nothing
