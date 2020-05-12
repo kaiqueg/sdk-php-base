@@ -150,6 +150,18 @@ class Json
     }
 
     /**
+     * @throws UnwritablePathException
+     * @throws WorthlessVariableException
+     */
+    public function delete(): void
+    {
+        $this->checkPath();
+        $this->checkPathWritePermission();
+        unlink($this->getPath());
+        $this->setData([]);
+    }
+
+    /**
      * @param array $fields
      * @param bool $getMultiple
      * @return array
